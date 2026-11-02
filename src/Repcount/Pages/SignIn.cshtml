@@ -1,0 +1,16 @@
+@page
+@model SignInModel
+@{
+    ViewData["Title"] = "Who's training?";
+}
+<h1>Who's training?</h1>
+<p class="muted">Tap your name. New here? <a asp-page="/Join">Join Repcount</a>.</p>
+<form method="post" class="member-picker">
+    @foreach (var m in Model.Members)
+    {
+        <button type="submit" name="memberId" value="@m.Id" class="secondary">@m.Name <span class="muted">@m.Plan.Name</span></button>
+    }
+</form>
+<form method="post" asp-page-handler="SignOut">
+    <button type="submit" class="link">Sign out</button>
+</form>

@@ -1,0 +1,43 @@
+@page "/Classes/{id:int}"
+@model Repcount.Pages.Classes.DetailsModel
+@{
+    var cls = Model.Session.GymClass;
+    ViewData["Title"] = cls.Name;
+    var spotsLeft = Math.Max(0, Model.Session.Capacity - Model.Booked);
+}
+<p><a asp-page="/Index" asp-route-date="@Model.Session.Date.ToString("yyyy-MM-dd")">&larr; Back to the timetable</a></p>
+<h1>@cls.Name</h1>
+<p class="byline" id="when">@Model.Session.Date.ToString("dddd d MMMM yyyy") at @cls.StartTime.ToString("h:mm tt") &middot; @cls.DurationMinutes minutes</p>
+<p>@cls.Description</p>
+
+<dl class="facts">
+    <dt>Instructor</dt><dd>@cls.Instructor.Name</dd>
+    <dt>Room</dt><dd>@cls.Room</dd>
+    <dt>Booked</dt><dd id="booked">@Model.Booked of @Model.Session.Capacity</dd>
+    <dt>Waitlist</dt><dd id="waitlist">@(Model.Waitlisted == 0 ? "Nobody waiting" : $"{Model.Waitlisted} waiting")</dd>
+</dl>
+
+@if (Model.Started)
+{
+    <p class="muted">This class has already started.</p>
+}
+else if (Model.MyBooking is { Status: BookingStatus.Booked })
+{
+    <p class="pill ok">You're booked in.</p>
+    <p><a asp-page="/Bookings/Index">Manage your bookings</a></p>
+}
+else if (Model.MyBooking is { Status: BookingStatus.Waitlisted })
+{
+    <p class="pill wait">You're on the waitlist.</p>
+    <p><a asp-page="/Bookings/Index">Manage your bookings</a></p>
+}
+else
+{
+    <form method="post" asp-page-handler="Book" asp-route-id="@Model.Session.GymClassId">
+        <button type="submit">@(spotsLeft > 0 ? "Book this class" : "Join the waitlist")</button>
+    </form>
+    @if (Model.Me is null)
+    {
+        <p class="muted">You'll be asked who you are first.</p>
+    }
+}

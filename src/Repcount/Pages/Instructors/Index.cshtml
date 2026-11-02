@@ -1,0 +1,28 @@
+@page
+@model Repcount.Pages.Instructors.IndexModel
+@{
+    ViewData["Title"] = "Instructors";
+}
+<h1>Instructors</h1>
+@foreach (var instructor in Model.Instructors)
+{
+    var mine = Model.Sessions.Where(s => s.GymClass.InstructorId == instructor.Id).ToList();
+    <section class="instructor">
+        <h2>@instructor.Name</h2>
+        <p class="muted">@instructor.Bio</p>
+        <table class="grid">
+            <thead><tr><th>Class</th><th>When</th><th>Booked</th><th>Waitlist</th></tr></thead>
+            <tbody>
+            @foreach (var s in mine)
+            {
+                <tr>
+                    <td><a asp-page="/Instructors/Roster" asp-route-id="@s.Id">@s.GymClass.Name</a></td>
+                    <td>@s.Date.ToString("ddd d MMM") at @s.GymClass.StartTime.ToString("h:mm tt")</td>
+                    <td>@s.Bookings.Count(b => b.Status == BookingStatus.Booked) / @s.Capacity</td>
+                    <td>@s.Bookings.Count(b => b.Status == BookingStatus.Waitlisted)</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </section>
+}

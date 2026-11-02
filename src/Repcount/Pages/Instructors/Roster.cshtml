@@ -1,0 +1,42 @@
+@page "/Instructors/Roster/{id:int}"
+@model Repcount.Pages.Instructors.RosterModel
+@{
+    var cls = Model.Session.GymClass;
+    ViewData["Title"] = $"Roster: {cls.Name}";
+}
+<p><a asp-page="/Instructors/Index">&larr; All instructors</a></p>
+<h1>@cls.Name roster</h1>
+<p class="byline">@Model.Session.Date.ToString("dddd d MMMM") at @cls.StartTime.ToString("h:mm tt") &middot; @cls.Room &middot; @cls.Instructor.Name</p>
+
+<p id="headcount"><strong>@Model.Booked.Count</strong> of @Model.Session.Capacity spots taken</p>
+
+<h2>Booked in</h2>
+<ol id="booked">
+    @foreach (var b in Model.Booked)
+    {
+        <li>@b.Member.Name</li>
+    }
+</ol>
+@if (Model.Booked.Count == 0)
+{
+    <p class="muted">Nobody yet.</p>
+}
+
+<h2>Waitlist</h2>
+<ol id="waitlist">
+    @foreach (var b in Model.Waitlist)
+    {
+        <li>@b.Member.Name</li>
+    }
+</ol>
+@if (Model.Waitlist.Count == 0)
+{
+    <p class="muted">Nobody waiting.</p>
+}
+
+<h2>Capacity</h2>
+<form method="post" asp-page-handler="Capacity" asp-route-id="@Model.Session.Id" class="inline">
+    <label for="capacity">Spots for this session</label>
+    <input id="capacity" name="capacity" type="number" min="1" max="@BookingService.MaxCapacity" value="@Model.Session.Capacity" />
+    <button type="submit" class="secondary">Update</button>
+</form>

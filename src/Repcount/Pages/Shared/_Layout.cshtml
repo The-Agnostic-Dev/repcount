@@ -1,0 +1,47 @@
+@inject CurrentMember CurrentMember
+@{
+    var me = await CurrentMember.GetAsync();
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] | Repcount</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+<header class="topbar">
+    <a class="brand" asp-page="/Index">Repcount</a>
+    <nav>
+        <a asp-page="/Index">Timetable</a>
+        <a asp-page="/Bookings/Index">My bookings</a>
+        <a asp-page="/Plans/Index">Plans</a>
+        <a asp-page="/Instructors/Index">Instructors</a>
+    </nav>
+    <div class="who">
+        @if (me is not null)
+        {
+            <span>Hi, <strong>@me.Name</strong></span>
+            <a asp-page="/SignIn">Switch</a>
+        }
+        else
+        {
+            <a asp-page="/SignIn">Sign in</a>
+            <a class="button" asp-page="/Join">Join</a>
+        }
+    </div>
+</header>
+<main>
+    @if (TempData["Notice"] is string notice)
+    {
+        <p class="flash notice">@notice</p>
+    }
+    @if (TempData["Error"] is string error)
+    {
+        <p class="flash error">@error</p>
+    }
+    @RenderBody()
+</main>
+</body>
+</html>

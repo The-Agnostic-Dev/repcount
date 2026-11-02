@@ -1,0 +1,28 @@
+@page
+@model Repcount.Pages.Plans.IndexModel
+@{
+    ViewData["Title"] = "Membership plans";
+}
+<h1>Membership plans</h1>
+<div class="plans">
+    @foreach (var plan in Model.Plans)
+    {
+        var current = Model.Me?.PlanId == plan.Id;
+        <article class="plan @(current ? "current" : "")">
+            <h2>@plan.Name</h2>
+            <p class="price">$@plan.MonthlyPrice.ToString("0.00") <span>a month</span></p>
+            <p>@(plan.ClassesPerWeek is int n ? $"{n} classes a week" : "Unlimited classes")</p>
+            <p class="muted">@plan.Description</p>
+            @if (current)
+            {
+                <p class="pill ok">Your plan</p>
+            }
+            else if (Model.Me is not null)
+            {
+                <form method="post" asp-page-handler="Choose" asp-route-planId="@plan.Id">
+                    <button type="submit" class="secondary">Switch to @plan.Name</button>
+                </form>
+            }
+        </article>
+    }
+</div>

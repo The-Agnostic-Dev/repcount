@@ -1,0 +1,8 @@
+services:
+  repcount:
+    build: .
+    ports:
+      - "5109:5109"
+    environment:
+      ASPNETCORE_HTTP_PORTS: "5109"
+      TZ: ${TZ:-UTC}

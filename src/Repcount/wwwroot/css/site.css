@@ -1,0 +1,120 @@
+:root {
+    --ink: #18202a;
+    --muted: #66717d;
+    --brand: #d9480f;
+    --brand-soft: #fff0e8;
+    --ok: #2b8a3e;
+    --ok-soft: #e6f6ea;
+    --wait: #a26b00;
+    --wait-soft: #fff6dc;
+    --danger: #c92a2a;
+    --line: #e3e6ea;
+    --paper: #f7f8fa;
+    font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+}
+
+body { margin: 0; }
+
+main {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 1.25rem 1.25rem 3rem;
+}
+
+a { color: var(--brand); }
+
+.topbar {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 0.7rem 1.25rem;
+    background: var(--ink);
+    color: #fff;
+}
+
+.topbar a { color: #fff; text-decoration: none; margin-right: 1rem; }
+.topbar .brand { font-weight: 800; font-size: 1.25rem; letter-spacing: 0.02em; }
+.topbar .who { margin-left: auto; display: flex; gap: 0.75rem; align-items: center; }
+
+.muted, .byline { color: var(--muted); }
+
+.flash { padding: 0.6rem 0.9rem; border-radius: 6px; }
+.flash.notice { background: var(--ok-soft); color: var(--ok); }
+.flash.error, .field-error { color: var(--danger); }
+.flash.error { background: #fdecec; }
+
+.title-row { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+
+.week-nav { display: flex; gap: 1.25rem; align-items: center; margin-bottom: 1rem; }
+
+.week {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(140px, 1fr));
+    gap: 0.6rem;
+    overflow-x: auto;
+}
+
+.day h2 { font-size: 1rem; margin: 0 0 0.5rem; }
+.day h2 span { color: var(--muted); font-weight: 400; }
+.day.today h2 { color: var(--brand); }
+
+.class-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--brand);
+    border-radius: 6px;
+    padding: 0.5rem 0.6rem;
+    margin-bottom: 0.5rem;
+}
+
+.class-card.past { opacity: 0.55; border-left-color: var(--line); }
+.class-card h3 { font-size: 1rem; margin: 0.1rem 0; }
+.class-card p { margin: 0.15rem 0; font-size: 0.85rem; }
+.class-card .time { font-weight: 700; }
+.spots.full { color: var(--danger); font-weight: 600; }
+
+.pill { display: inline-block; padding: 0.15rem 0.6rem; border-radius: 999px; font-size: 0.85rem; }
+.pill.ok { background: var(--ok-soft); color: var(--ok); }
+.pill.wait { background: var(--wait-soft); color: var(--wait); }
+
+button, .button {
+    font: inherit;
+    padding: 0.45rem 0.95rem;
+    border-radius: 6px;
+    border: 1px solid var(--brand);
+    background: var(--brand);
+    color: #fff;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+button.secondary { background: #fff; color: var(--brand); }
+button.link { background: none; border: none; color: var(--danger); padding: 0; text-decoration: underline; }
+
+input, select { font: inherit; padding: 0.35rem 0.5rem; border: 1px solid var(--line); border-radius: 6px; }
+
+form.inline { display: inline-flex; gap: 0.5rem; align-items: center; }
+form.stacked { display: grid; gap: 0.35rem; max-width: 420px; }
+form.stacked button { margin-top: 0.8rem; justify-self: start; }
+
+table.grid { width: 100%; border-collapse: collapse; background: #fff; }
+table.grid th, table.grid td { text-align: left; padding: 0.5rem 0.6rem; border-bottom: 1px solid var(--line); }
+
+.facts { display: grid; grid-template-columns: max-content 1fr; gap: 0.3rem 1rem; }
+.facts dt { color: var(--muted); }
+
+.usage { display: flex; gap: 1rem; margin: 1rem 0; }
+.usage-week { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 0.7rem 1rem; }
+.usage-week .label { display: block; color: var(--muted); font-size: 0.85rem; }
+.usage-week .count { font-size: 1.2rem; font-weight: 700; }
+
+.plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+.plan { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 1rem; }
+.plan.current { border-color: var(--brand); }
+.plan .price { font-size: 1.6rem; font-weight: 800; margin: 0.2rem 0; }
+.plan .price span { font-size: 0.9rem; font-weight: 400; color: var(--muted); }
+
+.member-picker { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+.instructor { margin-bottom: 2rem; }

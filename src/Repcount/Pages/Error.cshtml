@@ -1,0 +1,11 @@
+@page
+@model ErrorModel
+@{
+    ViewData["Title"] = "Error";
+}
+<h1>Something went wrong</h1>
+<p>Sorry, that didn't work. Please go back and try again.</p>
+@if (!string.IsNullOrEmpty(Model.RequestId))
+{
+    <p class="muted">Request ID: <code>@Model.RequestId</code></p>
+}

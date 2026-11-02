@@ -1,0 +1,26 @@
+@page
+@model JoinModel
+@{
+    ViewData["Title"] = "Join";
+}
+<h1>Join Repcount</h1>
+<form method="post" class="stacked">
+    <label asp-for="Input.Name">Full name</label>
+    <input asp-for="Input.Name" autocomplete="name" />
+    <span class="field-error" asp-validation-for="Input.Name"></span>
+
+    <label asp-for="Input.Email">Email</label>
+    <input asp-for="Input.Email" type="email" autocomplete="email" />
+    <span class="field-error" asp-validation-for="Input.Email"></span>
+
+    <label asp-for="Input.PlanId">Plan</label>
+    <select asp-for="Input.PlanId">
+        @foreach (var plan in Model.Plans)
+        {
+            <option value="@plan.Id">@plan.Name, $@plan.MonthlyPrice.ToString("0.00") a month</option>
+        }
+    </select>
+    <span class="field-error" asp-validation-for="Input.PlanId"></span>
+
+    <button type="submit">Join and start booking</button>
+</form>

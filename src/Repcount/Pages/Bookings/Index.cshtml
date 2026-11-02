@@ -1,0 +1,70 @@
+@page
+@model Repcount.Pages.Bookings.IndexModel
+@{
+    ViewData["Title"] = "My bookings";
+}
+<h1>My bookings</h1>
+<p class="byline">@Model.Me.Name &middot; @Model.Me.Plan.Name plan</p>
+
+<section class="usage">
+    @foreach (var week in Model.Usage)
+    {
+        <div class="usage-week" data-week="@week.WeekStart.ToString("yyyy-MM-dd")">
+            <span class="label">Week of @week.WeekStart.ToString("d MMM")</span>
+            <span class="count">@week.Used of @(week.Limit?.ToString() ?? "unlimited") classes</span>
+        </div>
+    }
+</section>
+
+<h2>Coming up</h2>
+@if (Model.Upcoming.Count == 0)
+{
+    <p class="muted">Nothing booked. <a asp-page="/Index">Find a class</a>.</p>
+}
+else
+{
+    <table class="grid" id="upcoming">
+        <thead><tr><th>Class</th><th>When</th><th>Instructor</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+        @foreach (var row in Model.Upcoming)
+        {
+            var s = row.Booking.Session;
+            <tr>
+                <td><a asp-page="/Classes/Details" asp-route-id="@s.Id">@s.GymClass.Name</a></td>
+                <td>@s.Date.ToString("ddd d MMM") at @s.GymClass.StartTime.ToString("h:mm tt")</td>
+                <td>@s.GymClass.Instructor.Name</td>
+                <td>
+                    @if (row.Booking.Status == BookingStatus.Booked)
+                    {
+                        <span class="pill ok">Booked</span>
+                    }
+                    else
+                    {
+                        <span class="pill wait">Waitlist #@row.PeopleAhead</span>
+                    }
+                </td>
+                <td>
+                    <form method="post" asp-page-handler="Cancel" asp-route-bookingId="@row.Booking.Id">
+                        <button type="submit" class="link">Cancel</button>
+                    </form>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+<h2>Recently attended</h2>
+@if (Model.Recent.Count == 0)
+{
+    <p class="muted">No classes yet.</p>
+}
+else
+{
+    <ul>
+        @foreach (var b in Model.Recent)
+        {
+            <li>@b.Session.GymClass.Name, @b.Session.Date.ToString("ddd d MMM")</li>
+        }
+    </ul>
+}

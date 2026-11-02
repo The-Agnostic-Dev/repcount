@@ -1,0 +1,58 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Timetable";
+    var weekEnd = Model.WeekStart.AddDays(6);
+}
+<div class="title-row">
+    <h1>Class timetable</h1>
+    <form method="get" class="inline">
+        <label for="date">Jump to</label>
+        <input id="date" type="date" name="date" value="@Model.WeekStart.ToString("yyyy-MM-dd")" />
+        <button type="submit" class="secondary">Go</button>
+    </form>
+</div>
+
+<nav class="week-nav">
+    <a asp-page="/Index" asp-route-date="@Model.WeekStart.AddDays(-7).ToString("yyyy-MM-dd")">&larr; Previous week</a>
+    <strong id="week-label">@Model.WeekStart.ToString("d MMM") to @weekEnd.ToString("d MMM yyyy")</strong>
+    @if (!Model.IsThisWeek)
+    {
+        <a asp-page="/Index">This week</a>
+    }
+    <a asp-page="/Index" asp-route-date="@Model.WeekStart.AddDays(7).ToString("yyyy-MM-dd")">Next week &rarr;</a>
+</nav>
+
+<div class="week">
+    @foreach (var day in Model.Days)
+    {
+        <section class="day @(day.IsToday ? "today" : "")" data-date="@day.Date.ToString("yyyy-MM-dd")">
+            <h2>@day.Date.ToString("dddd") <span>@day.Date.ToString("d MMM")</span></h2>
+            @if (day.Classes.Count == 0)
+            {
+                <p class="muted">No classes</p>
+            }
+            @foreach (var c in day.Classes.OrderBy(c => c.Time))
+            {
+                var full = c.Booked >= c.Capacity;
+                <article class="class-card @(c.Started ? "past" : "")">
+                    <p class="time">@c.Time</p>
+                    <h3><a asp-page="/Classes/Details" asp-route-id="@c.SessionId">@c.Name</a></h3>
+                    <p class="muted">@c.Instructor &middot; @c.Room &middot; @c.DurationMinutes min</p>
+                    @if (c.Started)
+                    {
+                        <p class="spots muted">Finished</p>
+                    }
+                    else if (full)
+                    {
+                        <p class="spots full">Full@(c.Waitlisted > 0 ? $", {c.Waitlisted} waiting" : "")</p>
+                    }
+                    else
+                    {
+                        <p class="spots">@c.Booked of @c.Capacity spots left</p>
+                    }
+                </article>
+            }
+        </section>
+    }
+</div>
