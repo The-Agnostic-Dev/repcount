@@ -98,7 +98,7 @@ public class TimetableTests : IDisposable
 
         foreach (var member in members)
         {
-            await gym.Bookings.BookAsync(session.Id, member.Id);
+            await gym.Bookings.BookAsync(member.Id, session.Id);
         }
 
         var reloaded = await gym.Db.Sessions
