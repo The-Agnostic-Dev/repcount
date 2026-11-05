@@ -35,6 +35,7 @@
             @foreach (var c in day.Classes.OrderBy(c => c.Time))
             {
                 var full = c.Booked >= c.Capacity;
+                var spotsLeft = Math.Max(0, c.Capacity - c.Booked);
                 <article class="class-card @(c.Started ? "past" : "")">
                     <p class="time">@c.Time</p>
                     <h3><a asp-page="/Classes/Details" asp-route-id="@c.SessionId">@c.Name</a></h3>
@@ -49,7 +50,7 @@
                     }
                     else
                     {
-                        <p class="spots">@c.Booked of @c.Capacity spots left</p>
+                        <p class="spots">@spotsLeft of @c.Capacity spots left</p>
                     }
                 </article>
             }
