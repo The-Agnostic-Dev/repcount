@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 using Repcount.Models;
 using Repcount.Pages;
 using Repcount.Services;
@@ -55,5 +56,65 @@ public class TimetableTests : IDisposable
         var input = new JoinInput { Name = name, Email = email, PlanId = 1 };
         var ok = Validator.TryValidateObject(input, new ValidationContext(input), [], validateAllProperties: true);
         Assert.Equal(valid, ok);
+    }
+
+    [Fact]
+    public async Task Empty_class_shows_full_capacity_as_spots_left()
+    {
+        gym.Db.Classes.Add(new GymClass { Name = "Strength Circuit", Instructor = gym.Coach, Day = DayOfWeek.Wednesday, StartTime = new TimeOnly(18, 0), Capacity = 12 });
+        await gym.Db.SaveChangesAsync();
+
+        var nextWeek = TestGym.Monday.AddDays(7);
+        var session = (await gym.Timetable.GetWeekAsync(nextWeek)).Single(s => s.GymClass.Name == "Strength Circuit");
+
+        var reloaded = await gym.Db.Sessions
+            .Include(s => s.Bookings)
+            .SingleAsync(s => s.Id == session.Id);
+        var booked = reloaded.Bookings.Count(b => b.Status == BookingStatus.Booked);
+
+        Assert.Equal(0, booked);
+        Assert.Equal(12, SpotsLeft.For(reloaded.Capacity, booked));
+    }
+
+    [Fact]
+    public async Task Booked_class_shows_capacity_minus_bookings_as_spots_left()
+    {
+        gym.Db.Classes.Add(new GymClass { Name = "Strength Circuit", Instructor = gym.Coach, Day = DayOfWeek.Wednesday, StartTime = new TimeOnly(18, 0), Capacity = 12 });
+        var plan = new MembershipPlan { Name = "Unlimited", ClassesPerWeek = null, MonthlyPrice = 69m, Description = "Every class on the timetable." };
+        gym.Db.Plans.Add(plan);
+        await gym.Db.SaveChangesAsync();
+
+        var nextWeek = TestGym.Monday.AddDays(7);
+        var session = (await gym.Timetable.GetWeekAsync(nextWeek)).Single(s => s.GymClass.Name == "Strength Circuit");
+
+        var members = new[]
+        {
+            new Member { Name = "Chidi Okeke", Email = "chidi.okeke@example.com", Plan = plan, JoinedOn = TestGym.Monday },
+            new Member { Name = "Hannah Schmidt", Email = "hannah.schmidt@example.com", Plan = plan, JoinedOn = TestGym.Monday },
+            new Member { Name = "Mei Lin", Email = "mei.lin@example.com", Plan = plan, JoinedOn = TestGym.Monday },
+        };
+        gym.Db.Members.AddRange(members);
+        await gym.Db.SaveChangesAsync();
+
+        foreach (var member in members)
+        {
+            await gym.Bookings.BookAsync(session.Id, member.Id);
+        }
+
+        var reloaded = await gym.Db.Sessions
+            .Include(s => s.Bookings)
+            .SingleAsync(s => s.Id == session.Id);
+        var booked = reloaded.Bookings.Count(b => b.Status == BookingStatus.Booked);
+
+        Assert.Equal(3, booked);
+        Assert.Equal(9, SpotsLeft.For(reloaded.Capacity, booked));
+    }
+
+    [Fact]
+    public void Spots_left_is_clamped_between_zero_and_capacity()
+    {
+        Assert.Equal(0, SpotsLeft.For(12, 15));
+        Assert.Equal(0, SpotsLeft.For(12, 12));
+        Assert.Equal(12, SpotsLeft.For(12, 0));
     }
 }
